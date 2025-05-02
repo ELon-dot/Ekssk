@@ -1,0 +1,1230 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Кошелёк - TON Space</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+
+        body {
+            background-color: #171717;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 40px;
+            overflow-x: hidden;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body.light-theme {
+            background-color: #fff;
+            color: #000;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 400px;
+            padding: 0 15px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .header .back,
+        .header .more {
+            font-size: 24px;
+            color: #fff;
+            cursor: pointer;
+            padding: 10px;
+            transition: transform 0.1s, opacity 0.3s;
+        }
+
+        .header .back:hover,
+        .header .more:hover {
+            opacity: 0.8;
+        }
+
+        .header .back:active,
+        .header .more:active {
+            transform: scale(0.9);
+        }
+
+        .header .back.light-theme,
+        .header .more.light-theme {
+            color: #000;
+        }
+
+        .header h1 {
+            font-size: 18px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+        }
+
+        .header h1 img {
+            width: 20px;
+            height: 20px;
+            margin-right: 8px;
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tabs button {
+            background: #2a2a2a;
+            border: none;
+            color: #888;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .tabs button.active {
+            background: #444;
+            color: #fff;
+        }
+
+        .tabs button.light-theme {
+            background: #e5e5e5;
+            color: #666;
+        }
+
+        .tabs button.active.light-theme {
+            background: #d1d1d1;
+            color: #000;
+        }
+
+        .balance-section {
+            text-align: center;
+            margin: 30px 0;
+            padding: 10px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            animation: fadeIn 0.5s ease;
+        }
+
+        .balance-section.light-theme {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .balance-section h2 {
+            font-size: 14px;
+            font-weight: 400;
+            color: #888;
+            margin-bottom: 10px;
+        }
+
+        .balance-section h2.light-theme {
+            color: #666;
+        }
+
+        .balance-section .total-balance {
+            font-size: 40px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            animation: balanceFade 0.5s ease;
+        }
+
+        @keyframes balanceFade {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .actions {
+            display: flex;
+            justify-content: space-around;
+            margin: 30px 0;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            color: #a970ff;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px;
+            position: relative;
+            overflow: hidden;
+            border-radius: 10px;
+            transition: transform 0.1s;
+        }
+
+        .action-btn::before {
+            content: '';
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            transform: scale(0);
+            transition: transform 0.3s ease;
+        }
+
+        .action-btn:active::before {
+            transform: scale(1);
+        }
+
+        .action-btn:active {
+            transform: scale(0.95);
+        }
+
+        .action-btn img {
+            width: 24px;
+            height: 24px;
+            margin-bottom: 5px;
+            filter: invert(70%) sepia(90%) saturate(600%) hue-rotate(220deg) brightness(110%) contrast(110%);
+        }
+
+        .promo {
+            background: linear-gradient(90deg, #ff8c00, #ff4500);
+            width: 100%;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            animation: promoSlide 0.5s ease;
+        }
+
+        @keyframes promoSlide {
+            from { transform: translateX(-20px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .promo-text {
+            font-size: 14px;
+            font-weight: 400;
+            color: #fff;
+        }
+
+        .promo img {
+            width: 40px;
+            height: 40px;
+        }
+
+        .assets {
+            width: 100%;
+        }
+
+        .asset {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #2a2a2a;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            position: relative;
+            animation: assetFade 0.5s ease;
+        }
+
+        @keyframes assetFade {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .asset.light-theme {
+            border-bottom: 1px solid #e5e5e5;
+        }
+
+        .asset:hover {
+            background: #222;
+        }
+
+        .asset.light-theme:hover {
+            background: #f5f5f5;
+        }
+
+        .asset:active {
+            transform: scale(0.98);
+        }
+
+        .asset-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .asset-info img {
+            width: 32px;
+            height: 32px;
+            margin-right: 10px;
+        }
+
+        .asset-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .asset-name {
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .asset-name.light-theme {
+            color: #000;
+        }
+
+        .asset-price {
+            font-size: 14px;
+            color: #888;
+        }
+
+        .asset-price.light-theme {
+            color: #666;
+        }
+
+        .asset-price .change {
+            color: #ff4500;
+        }
+
+        .asset-price .change.positive {
+            color: #00ff00;
+        }
+
+        .asset-balance {
+            text-align: right;
+        }
+
+        .asset-balance .usd {
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .asset-balance .usd.light-theme {
+            color: #000;
+        }
+
+        .asset-balance .crypto {
+            font-size: 14px;
+            color: #888;
+        }
+
+        .asset-balance .crypto.light-theme {
+            color: #666;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal.light-theme {
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .modal.active {
+            opacity: 1;
+        }
+
+        .modal-content {
+            background: #212121;
+            padding: 20px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            transform: translateY(50px);
+            transition: transform 0.3s ease, background 0.3s;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content.light-theme {
+            background: #fff;
+            color: #000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .modal.active .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-content h2 {
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 20px;
+        }
+
+        .modal-content select,
+        .modal-content input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 8px;
+            background: #2a2a2a;
+            color: #fff;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+
+        .modal-content select.light-theme,
+        .modal-content input.light-theme {
+            background: #e5e5e5;
+            color: #000;
+        }
+
+        .modal-content button {
+            background: #a970ff;
+            border: none;
+            color: #fff;
+            padding: 12px 0;
+            width: 100%;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            margin: 10px 0;
+            position: relative;
+            overflow: hidden;
+            transition: background 0.2s;
+        }
+
+        .modal-content button::before {
+            content: '';
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            transform: scale(0);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-content button:active::before {
+            transform: scale(1);
+        }
+
+        .modal-content button:hover {
+            background: #8a50ff;
+        }
+
+        .modal-content .close {
+            background: none;
+            color: #a970ff;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .modal-content .close.light-theme {
+            color: #a970ff;
+        }
+
+        .modal-content .close:hover {
+            background: none;
+        }
+
+        .modal-content .history {
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .modal-content .history h3 {
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .modal-content .history h3.light-theme {
+            color: #000;
+        }
+
+        .modal-content .history ul {
+            list-style: none;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .modal-content .history li {
+            padding: 10px 0;
+            border-bottom: 1px solid #2a2a2a;
+            font-size: 14px;
+            color: #888;
+            animation: historyFade 0.3s ease;
+        }
+
+        .modal-content .history li.light-theme {
+            border-bottom: 1px solid #e5e5e5;
+            color: #666;
+        }
+
+        @keyframes historyFade {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .modal-content .history-filter {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .modal-content .history-filter button {
+            background: #2a2a2a;
+            color: #888;
+            padding: 8px 15px;
+            font-size: 14px;
+        }
+
+        .modal-content .history-filter button.active {
+            background: #444;
+            color: #fff;
+        }
+
+        .modal-content .history-filter button.light-theme {
+            background: #e5e5e5;
+            color: #666;
+        }
+
+        .modal-content .history-filter button.active.light-theme {
+            background: #d1d1d1;
+            color: #000;
+        }
+
+        .admin-panel {
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .admin-panel a {
+            color: #a970ff;
+            font-size: 14px;
+            text-decoration: none;
+        }
+
+        .admin-panel a:hover {
+            text-decoration: underline;
+        }
+
+        .exchange-details,
+        .p2p-details {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .exchange-details .row,
+        .p2p-details .row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .exchange-details select,
+        .p2p-details select {
+            width: 48%;
+        }
+
+        .qr-code {
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .qr-code img {
+            width: 150px;
+            height: 150px;
+            background: #fff;
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .address {
+            background: #2a2a2a;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-size: 14px;
+            word-break: break-all;
+            position: relative;
+        }
+
+        .address.light-theme {
+            background: #e5e5e5;
+            color: #000;
+        }
+
+        .address button {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            color: #a970ff;
+            font-size: 14px;
+            padding: 5px 10px;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #444;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 10px;
+            z-index: 10000;
+            opacity: 0;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .notification.active {
+            opacity: 1;
+            transform: translateX(-50%) translateY(10px);
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #2a2a2a;
+            border: none;
+            color: #fff;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .theme-toggle.light-theme {
+            background: #e5e5e5;
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+    <button class="theme-toggle" onclick="toggleTheme()">Светлая тема</button>
+
+    <div class="container">
+        <div class="header">
+            <span class="back" onclick="showNotification('Функция в разработке')">✕</span>
+            <h1><img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" alt="Wallet Icon"> Кошелёк</h1>
+            <span class="more" onclick="showNotification('Функция в разработке')">⋮</span>
+        </div>
+
+        <div class="tabs">
+            <button class="active" onclick="showNotification('Кошелёк уже открыт')">Кошелёк</button>
+            <button onclick="showNotification('TON Space в разработке')">TON Space</button>
+        </div>
+
+        <div class="balance-section">
+            <h2>Баланс Кошелька</h2>
+            <div class="total-balance">0,00 $</div>
+        </div>
+
+        <div class="actions">
+            <button class="action-btn" onclick="openModal('depositModal')">
+                <img src="https://img.icons8.com/ios-filled/50/ffffff/upload.png" alt="Отправить">
+                Отправить
+            </button>
+            <button class="action-btn" onclick="openModal('withdrawModal')">
+                <img src="https://img.icons8.com/ios-filled/50/ffffff/download.png" alt="Пополнить">
+                Пополнить
+            </button>
+            <button class="action-btn" onclick="openModal('exchangeModal')">
+                <img src="https://img.icons8.com/ios-filled/50/ffffff/swap.png" alt="Обмен">
+                Обмен
+            </button>
+            <button class="action-btn" onclick="openModal('p2pModal')">
+                <img src="https://img.icons8.com/ios-filled/50/ffffff/store.png" alt="P2P">
+                P2P Маркет
+            </button>
+        </div>
+
+        <div class="promo">
+            <div class="promo-text">
+                Ускорьте запуск своего кошелька<br>Установить код-пароль
+            </div>
+            <img src="https://img.icons8.com/ios-filled/50/ffffff/lock.png" alt="Lock">
+        </div>
+
+        <div class="assets" id="assets">
+            <div class="asset" draggable="true" data-currency="USDT" onclick="openModal('assetModal-USDT')">
+                <div class="asset-info">
+                    <img src="https://img.icons8.com/color/48/000000/us-dollar-circled.png" alt="USDT">
+                    <div class="asset-details">
+                        <div class="asset-name">Доллары</div>
+                        <div class="asset-price">1,00 $</div>
+                    </div>
+                </div>
+                <div class="asset-balance">
+                    <div class="usd">0,00 $</div>
+                    <div class="crypto">0 USDT</div>
+                </div>
+            </div>
+            <div class="asset" draggable="true" data-currency="TON" onclick="openModal('assetModal-TON')">
+                <div class="asset-info">
+                    <img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" alt="TON">
+                    <div class="asset-details">
+                        <div class="asset-name">Toncoin</div>
+                        <div class="asset-price">3,12 $ <span class="change">↓ 2,62%</span></div>
+                    </div>
+                </div>
+                <div class="asset-balance">
+                    <div class="usd">0,00 $</div>
+                    <div class="crypto">0 TON</div>
+                </div>
+            </div>
+            <div class="asset" draggable="true" data-currency="BTC" onclick="openModal('assetModal-BTC')">
+                <div class="asset-info">
+                    <img src="https://cryptologos.cc/logos/bitcoin-btc-logo.png" alt="BTC">
+                    <div class="asset-details">
+                        <div class="asset-name">Bitcoin</div>
+                        <div class="asset-price">96 853,54 $ <span class="change positive">↑ 0,23%</span></div>
+                    </div>
+                </div>
+                <div class="asset-balance">
+                    <div class="usd">0,00 $</div>
+                    <div class="crypto">0 BTC</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="admin-panel">
+            <a href="#" onclick="openAdminPanel()">Админ-панель (установить фейковый баланс)</a>
+        </div>
+    </div>
+
+    <!-- Модальное окно для отправки -->
+    <div id="depositModal" class="modal">
+        <div class="modal-content">
+            <h2>Отправить</h2>
+            <select id="depositCurrency">
+                <option value="USDT">USDT</option>
+                <option value="TON">TON</option>
+                <option value="BTC">BTC</option>
+            </select>
+            <input type="text" id="depositAddress" placeholder="Адрес получателя">
+            <input type="number" id="depositAmount" placeholder="Сумма" step="0.01">
+            <button onclick="deposit()">Отправить</button>
+            <button class="close" onclick="closeModal('depositModal')">Закрыть</button>
+        </div>
+    </div>
+
+    <!-- Модальное окно для пополнения -->
+    <div id="withdrawModal" class="modal">
+        <div class="modal-content">
+            <h2>Пополнить</h2>
+            <select id="withdrawCurrency">
+                <option value="USDT">USDT</option>
+                <option value="TON">TON</option>
+                <option value="BTC">BTC</option>
+            </select>
+            <div class="qr-code">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=SampleAddress123" alt="QR Code">
+            </div>
+            <div class="address">
+                <span id="walletAddress">SampleAddress123</span>
+                <button onclick="copyAddress()">Копировать</button>
+            </div>
+            <button onclick="simulateScanQR()">Сканировать QR</button>
+            <button class="close" onclick="closeModal('withdrawModal')">Закрыть</button>
+        </div>
+    </div>
+
+    <!-- Модальное окно для обмена -->
+    <div id="exchangeModal" class="modal">
+        <div class="modal-content">
+            <h2>Обмен</h2>
+            <div class="exchange-details">
+                <div class="row">
+                    <select id="exchangeFromCurrency" onchange="updateExchangeResult()">
+                        <option value="USDT">USDT</option>
+                        <option value="TON">TON</option>
+                        <option value="BTC">BTC</option>
+                    </select>
+                    <select id="exchangeToCurrency" onchange="updateExchangeResult()">
+                        <option value="USDT">USDT</option>
+                        <option value="TON">TON</option>
+                        <option value="BTC">BTC</option>
+                    </select>
+                </div>
+                <input type="number" id="exchangeAmount" placeholder="Сумма" step="0.01" oninput="updateExchangeResult()">
+                <div id="exchangeResult" style="color: #888; margin: 10px 0;"></div>
+                <div style="font-size: 14px; color: #888;">Комиссия: 0.1%</div>
+            </div>
+            <button onclick="exchange()">Обменять</button>
+            <button class="close" onclick="closeModal('exchangeModal')">Закрыть</button>
+        </div>
+    </div>
+
+    <!-- Модальное окно для P2P -->
+    <div id="p2pModal" class="modal">
+        <div class="modal-content">
+            <h2>P2P Маркет</h2>
+            <div class="p2p-details">
+                <select id="p2pAction">
+                    <option value="buy">Купить</option>
+                    <option value="sell">Продать</option>
+                </select>
+                <div class="row">
+                    <select id="p2pCurrency">
+                        <option value="USDT">USDT</option>
+                        <option value="TON">TON</option>
+                        <option value="BTC">BTC</option>
+                    </select>
+                    <input type="number" id="p2pAmount" placeholder="Сумма" step="0.01">
+                </div>
+                <div style="font-size: 14px; color: #888;">Доступно: <span id="p2pAvailable">0</span></div>
+            </div>
+            <button onclick="p2pTrade()">Выполнить</button>
+            <button class="close" onclick="closeModal('p2pModal')">Закрыть</button>
+        </div>
+    </div>
+
+    <!-- Модальные окна для активов -->
+    <div id="assetModal-USDT" class="modal">
+        <div class="modal-content">
+            <h2>Доллары (USDT)</h2>
+            <div class="asset-balance">
+                <div class="usd">0,00 $</div>
+                <div class="crypto">0 USDT</div>
+            </div>
+            <button onclick="openModal('depositModal'); closeModal('assetModal-USDT')">Отправить</button>
+            <button onclick="openModal('withdrawModal'); closeModal('assetModal-USDT')">Пополнить</button>
+            <div class="history">
+                <h3>История транзакций</h3>
+                <div class="history-filter">
+                    <button class="active" onclick="filterHistory('USDT', 'all')">Все</button>
+                    <button onclick="filterHistory('USDT', 'in')">Входящие</button>
+                    <button onclick="filterHistory('USDT', 'out')">Исходящие</button>
+                </div>
+                <ul id="history-USDT"></ul>
+            </div>
+            <button class="close" onclick="closeModal('assetModal-USDT')">Закрыть</button>
+        </div>
+    </div>
+
+    <div id="assetModal-TON" class="modal">
+        <div class="modal-content">
+            <h2>Toncoin (TON)</h2>
+            <div class="asset-balance">
+                <div class="usd">0,00 $</div>
+                <div class="crypto">0 TON</div>
+            </div>
+            <button onclick="openModal('depositModal'); closeModal('assetModal-TON')">Отправить</button>
+            <button onclick="openModal('withdrawModal'); closeModal('assetModal-TON')">Пополнить</button>
+            <div class="history">
+                <h3>История транзакций</h3>
+                <div class="history-filter">
+                    <button class="active" onclick="filterHistory('TON', 'all')">Все</button>
+                    <button onclick="filterHistory('TON', 'in')">Входящие</button>
+                    <button onclick="filterHistory('TON', 'out')">Исходящие</button>
+                </div>
+                <ul id="history-TON"></ul>
+            </div>
+            <button class="close" onclick="closeModal('assetModal-TON')">Закрыть</button>
+        </div>
+    </div>
+
+    <div id="assetModal-BTC" class="modal">
+        <div class="modal-content">
+            <h2>Bitcoin (BTC)</h2>
+            <div class="asset-balance">
+                <div class="usd">0,00 $</div>
+                <div class="crypto">0 BTC</div>
+            </div>
+            <button onclick="openModal('depositModal'); closeModal('assetModal-BTC')">Отправить</button>
+            <button onclick="openModal('withdrawModal'); closeModal('assetModal-BTC')">Пополнить</button>
+            <div class="history">
+                <h3>История транзакций</h3>
+                <div class="history-filter">
+                    <button class="active" onclick="filterHistory('BTC', 'all')">Все</button>
+                    <button onclick="filterHistory('BTC', 'in')">Входящие</button>
+                    <button onclick="filterHistory('BTC', 'out')">Исходящие</button>
+                </div>
+                <ul id="history-BTC"></ul>
+            </div>
+            <button class="close" onclick="closeModal('assetModal-BTC')">Закрыть</button>
+        </div>
+    </div>
+
+    <script>
+        // Курсы валют (как на скриншоте)
+        const prices = {
+            USDT: 1.00,
+            TON: 3.12,
+            BTC: 96853.54
+        };
+
+        // Инициализация данных
+        let wallet = JSON.parse(localStorage.getItem('wallet')) || {
+            USDT: 0,
+            TON: 0,
+            BTC: 0
+        };
+
+        let history = JSON.parse(localStorage.getItem('history')) || {
+            USDT: [],
+            TON: [],
+            BTC: []
+        };
+
+        // Звуковые эффекты
+        const sounds = {
+            click: new Audio('https://assets.mixkit.co/sfx/preview/mixkit-click-ui-1254.mp3'),
+            success: new Audio('https://assets.mixkit.co/sfx/preview/mixkit-positive-notification-951.mp3'),
+            error: new Audio('https://assets.mixkit.co/sfx/preview/mixkit-error-bleep-911.mp3')
+        };
+
+        // Инициализация темы
+        if (localStorage.getItem('theme') === 'light') {
+            document.body.classList.add('light-theme');
+            document.querySelector('.theme-toggle').textContent = 'Тёмная тема';
+            updateThemeClasses();
+        }
+
+        // Обновление интерфейса
+        function updateUI() {
+            // Общий баланс в USD
+            let totalUSD = 0;
+            for (let currency in wallet) {
+                totalUSD += wallet[currency] * prices[currency];
+            }
+            document.querySelector('.total-balance').textContent = `${totalUSD.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} $`;
+
+            // Баланс по валютам
+            document.querySelectorAll('.asset').forEach(asset => {
+                const currency = asset.dataset.currency;
+                const amount = wallet[currency];
+                const usdValue = (amount * prices[currency]).toFixed(2);
+                asset.querySelector('.usd').textContent = `${usdValue.replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} $`;
+                asset.querySelector('.crypto').textContent = `${amount.toFixed(currency === 'BTC' ? 8 : 2)} ${currency}`;
+            });
+
+            // Обновление модальных окон активов
+            ['USDT', 'TON', 'BTC'].forEach(currency => {
+                const modal = document.getElementById(`assetModal-${currency}`);
+                const amount = wallet[currency];
+                const usdValue = (amount * prices[currency]).toFixed(2);
+                modal.querySelector('.usd').textContent = `${usdValue.replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} $`;
+                modal.querySelector('.crypto').textContent = `${amount.toFixed(currency === 'BTC' ? 8 : 2)} ${currency}`;
+                filterHistory(currency, 'all');
+            });
+
+            // Обновление P2P
+            const p2pCurrency = document.getElementById('p2pCurrency')?.value || 'USDT';
+            document.getElementById('p2pAvailable').textContent = `${wallet[p2pCurrency].toFixed(p2pCurrency === 'BTC' ? 8 : 2)} ${p2pCurrency}`;
+
+            // Сохранение данных
+            localStorage.setItem('wallet', JSON.stringify(wallet));
+            localStorage.setItem('history', JSON.stringify(history));
+        }
+
+        // Открытие модального окна
+        function openModal(modalId) {
+            sounds.click.play();
+            if ('vibrate' in navigator) navigator.vibrate(50);
+            const modal = document.getElementById(modalId);
+            modal.style.display = 'flex';
+            setTimeout(() => modal.classList.add('active'), 10);
+        }
+
+        // Закрытие модального окна
+        function closeModal(modalId) {
+            sounds.click.play();
+            const modal = document.getElementById(modalId);
+            modal.classList.remove('active');
+            setTimeout(() => modal.style.display = 'none', 300);
+        }
+
+        // Пополнение
+        function withdraw() {
+            const currency = document.getElementById('withdrawCurrency').value;
+            const amount = parseFloat(document.getElementById('withdrawAmount')?.value) || 0;
+            if (amount > 0) {
+                wallet[currency] += amount;
+                const usdValue = (amount * prices[currency]).toFixed(2);
+                history[currency].unshift({ type: 'Пополнение', amount: amount.toFixed(currency === 'BTC' ? 8 : 2), usdValue, direction: 'in', timestamp: new Date().toLocaleString() });
+                if (history[currency].length > 20) history[currency].pop();
+                updateUI();
+                sounds.success.play();
+                showNotification(`Пополнено: ${amount} ${currency}`);
+                closeModal('withdrawModal');
+            } else {
+                sounds.error.play();
+                showNotification('Введите сумму больше 0');
+            }
+        }
+
+        // Отправка
+        function deposit() {
+            const currency = document.getElementById('depositCurrency').value;
+            const address = document.getElementById('depositAddress').value;
+            const amount = parseFloat(document.getElementById('depositAmount').value) || 0;
+            if (amount > 0 && wallet[currency] >= amount && address) {
+                wallet[currency] -= amount;
+                const usdValue = (amount * prices[currency]).toFixed(2);
+                history[currency].unshift({ type: 'Отправка', amount: amount.toFixed(currency === 'BTC' ? 8 : 2), usdValue, direction: 'out', timestamp: new Date().toLocaleString() });
+                if (history[currency].length > 20) history[currency].pop();
+                updateUI();
+                sounds.success.play();
+                showNotification(`Отправлено: ${amount} ${currency}`);
+                closeModal('depositModal');
+            } else {
+                sounds.error.play();
+                showNotification('Недостаточно средств, некорректная сумма или адрес');
+            }
+        }
+
+        // Обмен
+        function exchange() {
+            const fromCurrency = document.getElementById('exchangeFromCurrency').value;
+            const toCurrency = document.getElementById('exchangeToCurrency').value;
+            const amount = parseFloat(document.getElementById('exchangeAmount').value) || 0;
+
+            if (fromCurrency === toCurrency) {
+                sounds.error.play();
+                showNotification('Выберите разные валюты для обмена');
+                return;
+            }
+
+            if (amount > 0 && wallet[fromCurrency] >= amount) {
+                const commission = 0.001; // 0.1%
+                const fromValueUSD = amount * prices[fromCurrency] * (1 - commission);
+                const toAmount = fromValueUSD / prices[toCurrency];
+
+                wallet[fromCurrency] -= amount;
+                wallet[toCurrency] += toAmount;
+
+                history[fromCurrency].unshift({ type: `Обмен на ${toCurrency}`, amount: amount.toFixed(fromCurrency === 'BTC' ? 8 : 2), usdValue: fromValueUSD.toFixed(2), direction: 'out', timestamp: new Date().toLocaleString() });
+                history[toCurrency].unshift({ type: `Получено с ${fromCurrency}`, amount: toAmount.toFixed(toCurrency === 'BTC' ? 8 : 2), usdValue: fromValueUSD.toFixed(2), direction: 'in', timestamp: new Date().toLocaleString() });
+
+                if (history[fromCurrency].length > 20) history[fromCurrency].pop();
+                if (history[toCurrency].length > 20) history[toCurrency].pop();
+
+                updateUI();
+                sounds.success.play();
+                showNotification(`Обмен: ${amount} ${fromCurrency} → ${toAmount.toFixed(toCurrency === 'BTC' ? 8 : 2)} ${toCurrency}`);
+                closeModal('exchangeModal');
+            } else {
+                sounds.error.play();
+                showNotification('Недостаточно средств или сумма некорректна');
+            }
+        }
+
+        // Динамическое обновление результата обмена
+        function updateExchangeResult() {
+            const fromCurrency = document.getElementById('exchangeFromCurrency').value;
+            const toCurrency = document.getElementById('exchangeToCurrency').value;
+            const amount = parseFloat(document.getElementById('exchangeAmount').value) || 0;
+            if (amount > 0) {
+                const commission = 0.001;
+                const fromValueUSD = amount * prices[fromCurrency] * (1 - commission);
+                const toAmount = fromValueUSD / prices[toCurrency];
+                document.getElementById('exchangeResult').textContent = `Вы получите: ${toAmount.toFixed(toCurrency === 'BTC' ? 8 : 2)} ${toCurrency}`;
+            } else {
+                document.getElementById('exchangeResult').textContent = '';
+            }
+        }
+
+        // P2P-трейд
+        function p2pTrade() {
+            const action = document.getElementById('p2pAction').value;
+            const currency = document.getElementById('p2pCurrency').value;
+            const amount = parseFloat(document.getElementById('p2pAmount').value) || 0;
+
+            if (amount <= 0) {
+                sounds.error.play();
+                showNotification('Введите сумму больше 0');
+                return;
+            }
+
+            if (action === 'sell' && wallet[currency] < amount) {
+                sounds.error.play();
+                showNotification('Недостаточно средств для продажи');
+                return;
+            }
+
+            if (action === 'buy') {
+                wallet[currency] += amount;
+                history[currency].unshift({ type: 'Покупка (P2P)', amount: amount.toFixed(currency === 'BTC' ? 8 : 2), usdValue: (amount * prices[currency]).toFixed(2), direction: 'in', timestamp: new Date().toLocaleString() });
+            } else {
+                wallet[currency] -= amount;
+                history[currency].unshift({ type: 'Продажа (P2P)', amount: amount.toFixed(currency === 'BTC' ? 8 : 2), usdValue: (amount * prices[currency]).toFixed(2), direction: 'out', timestamp: new Date().toLocaleString() });
+            }
+
+            if (history[currency].length > 20) history[currency].pop();
+            updateUI();
+            sounds.success.play();
+            showNotification(`${action === 'buy' ? 'Куплено' : 'Продано'}: ${amount} ${currency}`);
+            closeModal('p2pModal');
+        }
+
+        // Фильтрация истории транзакций
+        function filterHistory(currency, filter) {
+            const historyList = document.getElementById(`history-${currency}`);
+            historyList.innerHTML = '';
+            const filtered = filter === 'all' ? history[currency] : history[currency].filter(tx => filter === 'in' ? tx.direction === 'in' : tx.direction === 'out');
+
+            filtered.forEach(tx => {
+                const li = document.createElement('li');
+                li.classList.add(document.body.classList.contains('light-theme') ? 'light-theme' : '');
+                li.textContent = `${tx.timestamp} - ${tx.type}: ${tx.amount} ${currency} (${tx.usdValue} $)` + (tx.direction === 'in' ? ' ↑' : ' ↓');
+                historyList.appendChild(li);
+            });
+
+            document.querySelectorAll(`#assetModal-${currency} .history-filter button`).forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.onclick.toString().includes(`'${filter}'`)) btn.classList.add('active');
+            });
+        }
+
+        // Копирование адреса
+        function copyAddress() {
+            const address = document.getElementById('walletAddress').textContent;
+            navigator.clipboard.writeText(address).then(() => {
+                sounds.success.play();
+                showNotification('Адрес скопирован!');
+            });
+        }
+
+        // Имитация сканирования QR-кода
+        function simulateScanQR() {
+            sounds.click.play();
+            showNotification('Сканирование QR-кода...');
+            setTimeout(() => {
+                const currency = document.getElementById('withdrawCurrency').value;
+                const amount = Math.random() * 100;
+                wallet[currency] += amount;
+                history[currency].unshift({ type: 'Пополнение (QR)', amount: amount.toFixed(currency === 'BTC' ? 8 : 2), usdValue: (amount * prices[currency]).toFixed(2), direction: 'in', timestamp: new Date().toLocaleString() });
+                if (history[currency].length > 20) history[currency].pop();
+                updateUI();
+                sounds.success.play();
+                showNotification(`Пополнено через QR: ${amount.toFixed(currency === 'BTC' ? 2 : 2)} ${currency}`);
+                closeModal('withdrawModal');
+            }, 2000);
+        }
+
+        // Открытие админ-панели
+        function openAdminPanel() {
+            const password = prompt('Введите пароль для админ-панели (подсказка: admin123):');
+            if (password === 'admin123') {
+                const usdt = prompt('Введите баланс USDT:');
+                const ton = prompt('Введите баланс TON:');
+                const btc = prompt('Введите баланс BTC:');
+                if (usdt !== null && ton !== null && btc !== null) {
+                    wallet.USDT = parseFloat(usdt) || 0;
+                    wallet.TON = parseFloat(ton) || 0;
+                    wallet.BTC = parseFloat(btc) || 0;
+                    updateUI();
+                    sounds.success.play();
+                    showNotification('Баланс обновлён!');
+                }
+            } else {
+                sounds.error.play();
+                showNotification('Неверный пароль');
+            }
+        }
+
+        // Переключение темы
+        function toggleTheme() {
+            sounds.click.play();
+            document.body.classList.toggle('light-theme');
+            const isLight = document.body.classList.contains('light-theme');
+            localStorage.setItem('theme', isLight ? 'light' : 'dark');
+            document.querySelector('.theme-toggle').textContent = isLight ? 'Тёмная тема' : 'Светлая тема';
+            updateThemeClasses();
+        }
+
+        // Обновление классов темы
+        function updateThemeClasses() {
+            const isLight = document.body.classList.contains('light-theme');
+            document.querySelectorAll('.light-themeable').forEach(el => {
+                el.classList.toggle('light-theme', isLight);
+            });
+            document.querySelectorAll('.asset, .modal-content, .modal-content select, .modal-content input, .modal-content .history li, .modal-content .history-filter button, .modal-content h3, .balance-section, .balance-section h2, .tabs button, .header .back, .header .more, .asset-name, .asset-price, .asset-balance .usd, .asset-balance .crypto, .address').forEach(el => {
+                el.classList.toggle('light-theme', isLight);
+            });
+        }
+
+        // Уведомления
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            setTimeout(() => notification.classList.add('active'), 10);
+            setTimeout(() => {
+                notification.classList.remove('active');
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // Drag-and-drop для активов
+        let dragged;
+        document.getElementById('assets').addEventListener('dragstart', e => {
+            dragged = e.target;
+            setTimeout(() => dragged.style.display = 'none', 0);
+        });
+
+        document.getElementById('assets').addEventListener('dragend', e => {
+            dragged.style.display = 'flex';
+        });
+
+        document.getElementById('assets').addEventListener('dragover', e => {
+            e.preventDefault();
+        });
+
+        document.getElementById('assets').addEventListener('drop', e => {
+            e.preventDefault();
+            if (e.target.classList.contains('asset') && e.target !== dragged) {
+                const allAssets = Array.from(document.querySelectorAll('.asset'));
+                const draggedIndex = allAssets.indexOf(dragged);
+                const targetIndex = allAssets.indexOf(e.target);
+                if (draggedIndex < targetIndex) {
+                    e.target.after(dragged);
+                } else {
+                    e.target.before(dragged);
+                }
+                sounds.click.play();
+            }
+        });
+
+        // Инициализация при загрузке
+        updateUI();
+    </script>
+</body>
+</html>
